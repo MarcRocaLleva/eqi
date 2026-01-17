@@ -5,7 +5,7 @@ source("1. Scripts/0. Libs.R")
 
 # Import dataset
 
-eqi_raw <- read_csv("3. Dades/eqi_ind_24.csv")
+eqi_raw <- read_csv("3. Data/eqi_ind_24.csv")
 
 
 eqi <- eqi_raw %>% 
@@ -28,9 +28,16 @@ eqi <- eqi_raw %>%
     dweight, # compensate for certain people having a higher or lower likelihood of being surveyed
     pweight # adjust for a country’s proportion in the sample relative to its actual population of
             # the total population of all countries in the survey
-  )
+  ) %>% 
+  mutate(education_number = case_when(
+    education == "Elementary (primary) school or less (no diploma)" ~ 1,
+    education == "High (secondary) school (but did not graduated from it)" ~ 2,
+    education == "Graduation from high (secondary) school"  ~ 3,
+    education == "Graduation from college, university or other third-level institute" ~ 4,
+    education == "Post-graduate degree (Masters, PHD) beyond your initial college degree" ~ 5)) %>% 
+  relocate(education_number, .after = education)
 
 
-write_parquet(eqi, "3. Dades/eqi_clean")
+write_parquet(eqi, "3. Data/eqi_clean")
 
 
